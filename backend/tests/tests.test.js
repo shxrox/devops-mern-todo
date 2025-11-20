@@ -15,6 +15,7 @@ describe('GET api/tasks', () => {
         const res = await request(app).get('/api/tasks');
         expect(typeof res.body).toBe('object');
         expect(res.body).toHaveProperty('tasks');
+        console.log(res.body,'DATA Seeded');
     });
 });
 
