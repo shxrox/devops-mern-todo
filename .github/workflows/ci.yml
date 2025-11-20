@@ -6,21 +6,33 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Fix the 'ubunth-latest' typo
+
+    # 1. DEFINE MONGODB SERVICE HERE (in the job that needs it)
     services:
       mongo:
         image: mongo
         ports: ['27017:27017']
+        # Optionally set root credentials if required by your application
+        # env:
+        #   MONGO_INITDB_ROOT_USERNAME: user
+        #   MONGO_INITDB_ROOT_PASSWORD: password
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5 # Using v5 here for consistency
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+
+      # 2. Install dependencies (must be done before seeding or testing)
       - name: Install backend dependencies
         working-directory: ./backend
         run: npm install
+
+      # 3. Wait for MongoDB to be ready (Ensure local access before proceeding)
       - name: Wait for MongoDB to be ready
         run: |
           until nc -z localhost 27017; do
@@ -28,9 +40,68 @@ jobs:
             sleep 1
           done
           echo "MongoDB is up"
+      
+      # 4. Seed MongoDB
       - name: Seed MongoDB
         working-directory: ./backend
         run: node seedTaskData.js
+      
+      # 5. Run backend tests
       - name: Run backend tests
         working-directory: ./backend
+        # Ensure your backend connection string (MONGO_URI/DATABASE_URL) 
+        # is correctly set to 'mongodb://localhost:27017/yourdbname'
+        run: npm testname: MERN CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest # Fix the 'ubunth-latest' typo
+
+    # 1. DEFINE MONGODB SERVICE HERE (in the job that needs it)
+    services:
+      mongo:
+        image: mongo
+        ports: ['27017:27017']
+        # Optionally set root credentials if required by your application
+        # env:
+        #   MONGO_INITDB_ROOT_USERNAME: user
+        #   MONGO_INITDB_ROOT_PASSWORD: password
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5 # Using v5 here for consistency
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 2. Install dependencies (must be done before seeding or testing)
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+
+      # 3. Wait for MongoDB to be ready (Ensure local access before proceeding)
+      - name: Wait for MongoDB to be ready
+        run: |
+          until nc -z localhost 27017; do
+            echo "Waiting for MongoDB..."
+            sleep 1
+          done
+          echo "MongoDB is up"
+      
+      # 4. Seed MongoDB
+      - name: Seed MongoDB
+        working-directory: ./backend
+        run: node seedTaskData.js
+      
+      # 5. Run backend tests
+      - name: Run backend tests
+        working-directory: ./backend
+        # Ensure your backend connection string (MONGO_URI/DATABASE_URL) 
+        # is correctly set to 'mongodb://localhost:27017/yourdbname'
         run: npm test
