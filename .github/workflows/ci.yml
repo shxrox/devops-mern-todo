@@ -30,7 +30,7 @@ jobs:
           echo "MongoDB is up"
       - name: Seed MongoDB
         working-directory: ./backend
-        run: node seedTaskData.js
+        run: node seedTasksData.js
       - name: Run backend tests
         working-directory: ./backend
         run: npm test
