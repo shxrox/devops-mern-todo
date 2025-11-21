@@ -49,6 +49,7 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         // Handle database errors or invalid ID format (e.g., CastError)
         console.error("Error deleting task:", error.message);
+        console.log(error);
         res.status(500).json({ message: 'Server error' });
     }
 });
